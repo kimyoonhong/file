@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.sample.service.impl.SampleMapper">
+
+	<resultMap id="sample" type="egovframework.example.sample.service.SampleVO">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="description" column="description"/>
+		<result property="useYn" column="use_yn"/>
+		<result property="regUser" column="reg_user"/>
+	</resultMap>
+	
+	<resultMap id="hongVO" type="egovframework.example.sample.service.hongVO">
+		<result property="hong_idx" column="hong_idx"/>
+		<result property="name" column="name"/>
+		<result property="image" column="image"/>
+		<result property="originalFileName" column="originalFileName"/>
+		<result property="image_size" column="image_size"/>
+		<result property="image_name" column="image_name"/>
+		<result property="image_Path" column="image_Path"/>
+		<result property="reg_Date" column="reg_Date"/>
+	</resultMap>
+	
+	
+	<!-- 등록 -->
+	<insert id="insertHongVO" parameterType="HashMap">
+
+			INSERT INTO hong_tb
+				( hong_idx
+				  , name
+				  , image
+				  , image_size
+				  , originalFileName
+				  , image_name
+				  , image_path
+				  , reg_Date
+				  )
+			VALUES ( hong_idx.nextval
+				  , #{name}
+				  , #{image}
+				  , #{image_size}
+				  , #{originalFileName}
+				  , #{image_name}
+				  , #{image_Path}
+				  , sysdate
+				  )
+
+	</insert>
+	
+	<!-- 삭제 -->
+	<delete id="deleteHongVO" parameterType="hongVO">
+	
+		DELETE FROM hong_tb
+		where hong_idx = #{hong_idx}
+	</delete>
+	
+	<!-- 수정 -->
+	<update id="updateHongVO" parameterType="hongVO">
+
+			UPDATE hong_tb
+			
+			SET 
+				image=#{image}
+				
+			WHERE hong_idx=#{hong_idx}
+
+	</update>
+	
+	<!-- 조회 -->
+	<select id="selectListHongVO" resultType="java.util.Map">
+	select * from hong_TB order by hong_idx
+	</select>
+	
+	<!--파일 삭제를 위한 조회 -->
+	<select id="selectOne" resultType="hongVO" parameterType="hongVO">
+	select * from hong_TB where hong_idx = #{hong_idx}
+	</select>
+	
+	
+	
+	<insert id="insertSample" parameterType="SampleVO">
+
+			INSERT INTO SAMPLE
+				( ID
+				  , NAME
+				  , DESCRIPTION
+				  , USE_YN
+				  , REG_USER )
+			VALUES ( #{id}
+				  , #{name}
+				  , #{description}
+				  , #{useYn}
+				  , #{regUser} )
+
+	</insert>
+
+	<update id="updateSample">
+
+			UPDATE SAMPLE
+			SET ID=#{id}
+				, NAME=#{name}
+				, DESCRIPTION=#{description}
+				, USE_YN=#{useYn}
+				  WHERE ID=#{id}
+
+	</update>
+
+	<delete id="deleteSample">
+
+			DELETE FROM SAMPLE
+			WHERE ID=#{id}
+
+	</delete>
+
+	<select id="selectSample" resultMap="sample">
+
+			SELECT
+				ID, NAME, DESCRIPTION, USE_YN, REG_USER
+			FROM SAMPLE
+			WHERE ID=#{id}
+
+	</select>
+
+	<select id="selectSampleList" parameterType="searchVO" resultType="egovMap">
+
+			SELECT
+				ID, NAME, DESCRIPTION, USE_YN, REG_USER
+			FROM SAMPLE
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+		        <choose>
+		            <when test="searchCondition == 0">
+						AND	ID LIKE '%' || #{searchKeyword} || '%'
+					</when>
+		            <when test="searchCondition == 1">
+						AND	NAME LIKE '%' || #{searchKeyword} || '%'
+					</when>
+				</choose>
+			</if>
+			ORDER BY ID ASC
+		
+	</select>
+
+	<select id="selectSampleListTotCnt" parameterType="searchVO" resultType="int">
+
+			SELECT COUNT(*) totcnt
+			FROM SAMPLE
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+		        <choose>
+		            <when test="searchCondition == 0">
+						AND ID LIKE '%' || #{searchKeyword} || '%'
+					</when>
+		            <when test="searchCondition == 1">
+						AND	NAME LIKE '%' || #{searchKeyword} || '%'
+					</when>
+				</choose>
+			</if>
+	</select>
+
+</mapper>
